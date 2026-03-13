@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kandhan Papers - Branded Calc</title>
+    <style>
+        /* Define Brand Colors from image */
+        :root {
+            --brand-primary-blue: #44546c; /* Match text/logo */
+            --brand-grey-dark: #2c3e50; /* Match text strip */
+            --brand-bg-blue-grey: #f7f9fb; /* Match result box bg */
+            --accent-whatsapp: #25D366;
+        }
+
+        body { font-family: 'Times New Roman', Times, serif; background-color: #fcfcfc; display: flex; justify-content: center; padding: 20px; }
+        .card { background: white; padding: 0px 30px 30px 30px; border-radius: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); width: 100%; max-width: 450px; overflow: hidden;}
+        
+        /* Branded Header Area */
+        .brand-header {
+            text-align: center;
+            color: var(--brand-primary-blue);
+            padding: 30px 0 10px 0;
+        }
+        .brand-header .k-logo {
+            font-size: 2em;
+            width: 70px;
+            height: 70px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid var(--brand-primary-blue);
+            border-radius: 50%;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        h2.brand-name {
+            font-size: 3.5em; /* Large size for main name */
+            margin: 0;
+            margin-top: -15px;
+        }
+        .sub-services-strip {
+            background-color: var(--brand-grey-dark);
+            color: white;
+            padding: 10px 15px;
+            font-style: italic;
+            font-size: 1em;
+            text-align: center;
+            margin: 15px -30px 20px -30px; /* Force strip to span width */
+        }
+
+        /* Standard Controls, Branded Colors */
+        .unit-toggle { display: flex; justify-content: center; margin-bottom: 25px; gap: 10px; }
+        .unit-btn { flex: 1; padding: 10px; border: 2px solid var(--brand-primary-blue); background: white; cursor: pointer; border-radius: 8px; color: var(--brand-primary-blue); font-weight: bold; font-family: sans-serif;}
+        .unit-btn.active { background: var(--brand-primary-blue); color: white; }
+        
+        .input-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        .input-group { flex: 1; margin-bottom: 15px;}
+        label { display: block; margin-bottom: 5px; font-size: 0.85em; font-weight: bold; color: #444; font-family: sans-serif;}
+        input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        
+        /* Branded Results Box */
+        .result-box { background: var(--brand-bg-blue-grey); color: var(--brand-primary-blue); padding: 20px; border-radius: 12px; margin-top: 10px; text-align: center; font-family: sans-serif; }
+        .res-row { display: flex; justify-content: space-between; margin-bottom: 5px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 5px;}
+        .final-price { font-size: 1.8em; font-weight: bold; display: block; margin-top: 5px; color: #1e2833; }
+        
+        /* Contact/Footer styling */
+        .brand-footer { font-size: 0.9em; text-align: center; color: var(--brand-primary-blue); margin: 20px 0 10px 0;}
+
+        /* Branded Buttons */
+        .wa-btn { width: 100%; background-color: var(--accent-whatsapp); color: white; border: none; padding: 15px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; font-family: sans-serif;}
+        .wa-btn:hover { background-color: #128C7E; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="brand-header">
+        <div class="k-logo">K</div>
+        <h2 class="brand-name">Kandhan Papers</h2>
+    </div>
+
+    <div class="sub-services-strip">
+        Grey Back, White Back, Folding Box & Inner Board
+    </div>
+
+    <div class="unit-toggle">
+        <button class="unit-btn active" id="btnInch" onclick="setUnit('inch')">INCHES</button>
+        <button class="unit-btn" id="btnCm" onclick="setUnit('cm')">CMS</button>
+    </div>
+
+    <div class="input-row">
+        <div class="input-group">
+            <label id="lblL">Length (In)</label>
+            <input type="number" id="length" placeholder="0" oninput="calculate()">
+        </div>
+        <div class="input-group">
+            <label id="lblW">Width (In)</label>
+            <input type="number" id="width" placeholder="0" oninput="calculate()">
+        </div>
+    </div>
+
+    <div class="input-row">
+        <div class="input-group">
+            <label>GSM</label>
+            <input type="number" id="gsm" placeholder="0" oninput="calculate()">
+        </div>
+        <div class="input-group">
+            <label>Sheets</label>
+            <input type="number" id="sheets" value="1" oninput="calculate()">
+        </div>
+    </div>
+
+    <div class="input-group">
+        <label>Rate per KG (₹)</label>
+        <input type="number" id="rateKg" placeholder="0.00" oninput="calculate()">
+    </div>
+
+    <div class="result-box">
+        <div class="res-row"><span>Total Weight:</span><span id="resWeight">0.000 kg</span></div>
+        <span>TOTAL PRICE</span>
+        <span class="final-price" id="resPrice">₹ 0.00</span>
+    </div>
+
+    <button class="wa-btn" onclick="shareWhatsApp()">
+        SHARE QUOTE ON WHATSAPP
+    </button>
+
+    <div class="brand-footer">
+        email : tpr.kandhanpapers@gmail.com
+    </div>
+</div>
+
+<script>
+let currentUnit = 'inch';
+
+function setUnit(unit) {
+    currentUnit = unit;
+    document.getElementById('btnInch').classList.toggle('active', unit === 'inch');
+    document.getElementById('btnCm').classList.toggle('active', unit === 'cm');
+    document.getElementById('lblL').innerText = unit === 'inch' ? 'Length (In)' : 'Length (Cm)';
+    document.getElementById('lblW').innerText = unit === 'inch' ? 'Width (In)' : 'Width (Cm)';
+    calculate();
+}
+
+function calculate() {
+    const L = parseFloat(document.getElementById('length').value) || 0;
+    const W = parseFloat(document.getElementById('width').value) || 0;
+    const gsm = parseFloat(document.getElementById('gsm').value) || 0;
+    const sheets = parseFloat(document.getElementById('sheets').value) || 0;
+    const rateKg = parseFloat(document.getElementById('rateKg').value) || 0;
+
+    let totalWeight = 0;
+    if (L > 0 && W > 0 && gsm > 0 && sheets > 0) {
+        // Calculation logic - maintaining the proven formula
+        const divisor = (currentUnit === 'inch') ? 1550000 : 10000000;
+        totalWeight = (L * W * gsm * sheets) / divisor;
+        let totalPrice = totalWeight * rateKg;
+
+        document.getElementById('resWeight').innerText = totalWeight.toFixed(3) + " kg";
+        document.getElementById('resPrice').innerText = "₹ " + totalPrice.toLocaleString('en-IN', {minimumFractionDigits: 2});
+    }
+}
+
+function shareWhatsApp() {
+    const L = document.getElementById('length').value;
+    const W = document.getElementById('width').value;
+    const gsm = document.getElementById('gsm').value;
+    const sheets = document.getElementById('sheets').value;
+    const weight = document.getElementById('resWeight').innerText;
+    const price = document.getElementById('resPrice').innerText;
+    const unitLabel = currentUnit === 'inch' ? 'Inch' : 'Cm';
+
+    // Formatted message with company branding
+    const message = `*KANDHAN PAPERS - QUOTATION*%0A%0A` +
+                    `*Size:* ${L} x ${W} ${unitLabel}%0A` +
+                    `*GSM:* ${gsm}%0A` +
+                    `*Qty:* ${sheets} Sheets%0A` +
+                    `*Total Weight:* ${weight}%0A` +
+                    `*Final Rate:* ${price}%0A%0A` +
+                    `*Kandhan Papers*%0A` +
+                    `_tpr.kandhanpapers@gmail.com_%0A` +
+                    `Thank you for your business!`;
+
+    window.open(`https://wa.me/?text=${message}`, '_blank');
+}
+</script>
+
+</body>
+</html>
